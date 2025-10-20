@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.MenuController"
+            prefWidth="800" prefHeight="500"
+            style="-fx-background-color: linear-gradient(to bottom right, #845EC2, #D65DB1);">
+
+    <!-- Título principal -->
+    <Label text="✨ Sistema Escolar - Menu Hazel ✨"
+           layoutX="180" layoutY="40"
+           style="-fx-font-size: 26px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
+    <!-- Panel central -->
+    <VBox layoutX="250" layoutY="120" spacing="20" alignment="CENTER"
+          style="-fx-background-color: rgba(255,255,255,0.15); -fx-background-radius: 20;"
+          prefWidth="300" prefHeight="260">
+        <padding>
+            <Insets top="30" bottom="30" left="20" right="20"/>
+        </padding>
+
+        <Label text="Seleccione una opción:"
+               style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+
+        <Button text="📋 Asistencias"
+                onAction="#abrirAsistencias"
+                style="-fx-background-color: white; -fx-text-fill: #845EC2; -fx-font-size: 14px;
+                       -fx-background-radius: 10; -fx-font-weight: bold;"
+                prefWidth="200" prefHeight="40"/>
+
+        <Button text="👩‍🎓 Estudiantes"
+                onAction="#abrirEstudiantes"
+                style="-fx-background-color: white; -fx-text-fill: #845EC2; -fx-font-size: 14px;
+                       -fx-background-radius: 10; -fx-font-weight: bold;"
+                prefWidth="200" prefHeight="40"/>
+
+        <Button text="📘 Materias"
+                onAction="#abrirMaterias"
+                style="-fx-background-color: white; -fx-text-fill: #845EC2; -fx-font-size: 14px;
+                       -fx-background-radius: 10; -fx-font-weight: bold;"
+                prefWidth="200" prefHeight="40"/>
+
+        <Button text="🚪 Salir"
+                onAction="#cerrarAplicacion"
+                style="-fx-background-color: #FF6F91; -fx-text-fill: white; -fx-font-size: 14px;
+                       -fx-background-radius: 10; -fx-font-weight: bold;"
+                prefWidth="200" prefHeight="40"/>
+    </VBox>
+
+    <!-- Créditos -->
+    <Label text="Desarrollado por Alan Flores 💻"
+           layoutX="540" layoutY="470"
+           style="-fx-font-size: 12px; -fx-text-fill: white;"/>
+</AnchorPane>

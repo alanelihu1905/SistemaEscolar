@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.AsistenciaController"
+            prefHeight="850.0" prefWidth="920.0"
+            style="-fx-background-color: #144230;">
+
+    <children>/Users/alanflores/Library/Java/JavaVirtualMachines/openjdk-25/Contents/Home/bin/java --module-path /Users/alanflores/Downloads/javafx-sdk-25/lib --add-modules javafx.controls,javafx.fxml -Djava.library.path=/Users/alanflores/Downloads/javafx-sdk-25/lib -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=57058 -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath /Users/alanflores/Desktop/SistemaEscolar/target/classes:/Users/alanflores/.m2/repository/org/mariadb/jdbc/mariadb-java-client/3.5.6/mariadb-java-client-3.5.6.jar:/Users/alanflores/.m2/repository/com/github/mwiede/jsch/2.27.3/jsch-2.27.3.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-controls/21.0.8/javafx-controls-21.0.8.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-controls/21.0.8/javafx-controls-21.0.8-mac-aarch64.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-graphics/21.0.8/javafx-graphics-21.0.8.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-graphics/21.0.8/javafx-graphics-21.0.8-mac-aarch64.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-base/21.0.8/javafx-base-21.0.8.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-base/21.0.8/javafx-base-21.0.8-mac-aarch64.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-fxml/21.0.8/javafx-fxml-21.0.8.jar:/Users/alanflores/.m2/repository/org/openjfx/javafx-fxml/21.0.8/javafx-fxml-21.0.8-mac-aarch64.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx-swt.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.web.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.base.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.fxml.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.media.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.swing.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/jdk.jsobject.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.controls.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.graphics.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/jfx.incubator.input.jar:/Users/alanflores/Downloads/javafx-sdk-25/lib/jfx.incubator.richtext.jar org.example.Main
+        WARNING: A restricted method in java.lang.System has been called
+        WARNING: java.lang.System::load has been called by com.sun.glass.utils.NativeLibLoader in module javafx.graphics (file:/Users/alanflores/Downloads/javafx-sdk-25/lib/javafx.graphics.jar)
+        WARNING: Use --enable-native-access=javafx.graphics to avoid a warning for callers in this module
+        WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+        Exception in Application start method
+        java.lang.reflect.InvocationTargetException
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:119)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+        at javafx.graphics@25/com.sun.javafx.application.LauncherImpl.launchApplicationWithArgs(LauncherImpl.java:470)
+        at javafx.graphics@25/com.sun.javafx.application.LauncherImpl.launchApplication(LauncherImpl.java:370)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+        at java.base/sun.launcher.LauncherHelper$FXHelper.main(LauncherHelper.java:1171)
+        Caused by: java.lang.RuntimeException: Exception in Application start method
+        at javafx.graphics@25/com.sun.javafx.application.LauncherImpl.launchApplication1(LauncherImpl.java:899)
+        at javafx.graphics@25/com.sun.javafx.application.LauncherImpl.lambda$launchApplication$0(LauncherImpl.java:202)
+        at java.base/java.lang.Thread.run(Thread.java:1474)
+        Caused by: javafx.fxml.LoadException: Error resolving onAction='#limpiarCampos', either the event handler is not in the Namespace or there is an error in the script.
+        /Users/alanflores/Desktop/SistemaEscolar/target/classes/Asistencia.fxml:42
+
+        at javafx.fxml@25/javafx.fxml.FXMLLoader.constructLoadException(FXMLLoader.java:2688)
+        at javafx.fxml@25/javafx.fxml.FXMLLoader$Element.processEventHandlerAttributes(FXMLLoader.java:610)
+        at javafx.fxml@25/javafx.fxml.FXMLLoader$ValueElement.processEndElement(FXMLLoader.java:770)
+        at javafx.fxml@25/javafx.fxml.FXMLLoader.processEndElement(FXMLLoader.java:2939)
+        at javafx.fxml@25/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2624)
+        at javafx.fxml@25/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2533)
+        at javafx.fxml@25/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2503)
+        at org.example.Main.start(Main.java:13)
+        at javafx.graphics@25/com.sun.javafx.application.LauncherImpl.lambda$launchApplication1$4(LauncherImpl.java:845)
+        at javafx.graphics@25/com.sun.javafx.application.PlatformImpl.lambda$runAndWait$0(PlatformImpl.java:449)
+        at javafx.graphics@25/com.sun.javafx.application.PlatformImpl.lambda$runLater$0(PlatformImpl.java:424)
+        at javafx.graphics@25/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+        Exception running application org.example.Main
+
+        Proceso terminado con código de salida 1<?xml version="1.0" encoding="UTF-8"?>
+
+        <?import javafx.scene.Cursor?>
+        <?import javafx.scene.control.*?>
+        <?import javafx.scene.layout.*?>
+        <?import javafx.geometry.Insets?>
+        <?import javafx.scene.text.Font?>
+
+        <AnchorPane xmlns="http://javafx.com/javafx/25"
+                    xmlns:fx="http://javafx.com/fxml/1"
+                    fx:controller="org.example.AsistenciaController"
+                    prefHeight="850.0" prefWidth="920.0"
+                    style="-fx-background-color: #144230;">
+
+            <children>
+                <VBox spacing="15.0"
+                      AnchorPane.topAnchor="20.0"
+                      AnchorPane.leftAnchor="20.0"
+                      AnchorPane.rightAnchor="20.0"
+                      AnchorPane.bottomAnchor="20.0">
+
+                    <!-- Título -->
+                    <Label text="Gestión de Asistencias"
+                           alignment="CENTER"
+                           style="-fx-font-size: 32px; -fx-font-family: 'AppleMyungjo Regular'; -fx-text-fill: #DDE0D2; -fx-font-weight: bold;"
+                           VBox.vgrow="NEVER"/>
+
+                    <!-- Formulario -->
+                    <GridPane hgap="15" vgap="15" alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="30"/>
+                            <ColumnConstraints percentWidth="70"/>
+                        </columnConstraints>
+
+                        <!-- ID Inscripción -->
+                        <Label text="ID Inscripción:" textFill="#dde0d2" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                            <font>
+                                <Font name="Arial" size="20"/>
+                            </font>
+                        </Label>
+                        <TextField fx:id="idInscripcionTextField" prefWidth="250"
+                                   GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <!-- Estudiante -->
+                        <Label text="Estudiante:" textFill="#dde0d2" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                            <font>
+                                <Font name="Arial" size="20"/>
+                            </font>
+                        </Label>
+                        <ComboBox fx:id="comboEstudiante" promptText="Selecciona estudiante" prefWidth="250"
+                                  GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <!-- Materia -->
+                        <Label text="Materia:" textFill="#dde0d2" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                            <font>
+                                <Font name="Arial" size="20"/>
+                            </font>
+                        </Label>
+                        <ComboBox fx:id="comboMateria" promptText="Selecciona materia" prefWidth="250"
+                                  GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <!-- Fecha -->
+                        <Label text="Fecha:" textFill="#dde0d2" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                            <font>
+                                <Font name="Arial" size="20"/>
+                            </font>
+                        </Label>
+                        <DatePicker fx:id="datePicker" promptText="Selecciona fecha"
+                                    GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    </GridPane>
+
+                    <!-- Botones principales -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <Button fx:id="guardarButton"
+                                text="Guardar Datos"
+                                onAction="#guardarButtonPressed"
+                                style="-fx-background-color: #FFF9C4; -fx-border-color: #FBC02D; -fx-border-width: 2px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-text-fill: #795548; -fx-font-size: 18px; -fx-font-weight: bold;">
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </Button>
+
+                        <Button fx:id="verButton"
+                                text="Ver Datos"
+                                onAction="#verButtonPressed"
+                                style="-fx-background-color: #FFF9C4; -fx-border-color: #FBC02D; -fx-border-width: 2px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-text-fill: #795548; -fx-font-size: 18px; -fx-font-weight: bold;">
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </Button>
+
+                        <Button text="Limpiar"
+                                onAction="#limpiarCampos"
+                                style="-fx-background-color: #9E9E9E; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </Button>
+                    </HBox>
+
+                    <!-- Tabla -->
+                    <TableView fx:id="tabla" prefHeight="500">
+                        <columns>
+                            <TableColumn fx:id="colIdAsistencia" prefWidth="100" text="ID Asistencia"/>
+                            <TableColumn fx:id="colIdInscripcion" prefWidth="120" text="ID Inscripción"/>
+                            <TableColumn fx:id="colEstudiante" prefWidth="200" text="Estudiante"/>
+                            <TableColumn fx:id="colMateria" prefWidth="200" text="Materia"/>
+                            <TableColumn fx:id="colFecha" prefWidth="150" text="Fecha"/>
+                            <TableColumn fx:id="colCreado" prefWidth="150" text="Creado"/>
+                            <TableColumn fx:id="colActualizado" prefWidth="150" text="Actualizado"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Botón de regreso -->
+                    <HBox alignment="CENTER">
+                        <Button text="Regresar al menú"
+                                onAction="#menuButtonPressed"
+                                prefHeight="44.0" prefWidth="200.0"
+                                style="-fx-background-color: #FFF9C4; -fx-border-color: #FBC02D; -fx-border-width: 2px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #795548;">
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </children>
+        </AnchorPane>
+
+        <VBox spacing="15.0"
+              AnchorPane.topAnchor="20.0"
+              AnchorPane.leftAnchor="20.0"
+              AnchorPane.rightAnchor="20.0"
+              AnchorPane.bottomAnchor="20.0">
+
+            <!-- Título -->
+            <Label text="Gestión de Asistencias"
+                   alignment="CENTER"
+                   style="-fx-font-size: 32px; -fx-font-family: 'AppleMyungjo Regular'; -fx-text-fill: #DDE0D2; -fx-font-weight: bold;"
+                   VBox.vgrow="NEVER"/>
+
+            <!-- Formulario -->
+            <GridPane hgap="15" vgap="15" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="30"/>
+                    <ColumnConstraints percentWidth="70"/>
+                </columnConstraints>
+
+                <!-- ID Inscripción -->
+                <Label text="ID Inscripción:" textFill="#dde0d2" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                    <font>
+                        <Font name="Arial" size="20"/>
+                    </font>
+                </Label>
+                <TextField fx:id="idInscripcionTextField" prefWidth="250"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <!-- Estudiante -->
+                <Label text="Estudiante:" textFill="#dde0d2" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                    <font>
+                        <Font name="Arial" size="20"/>
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboEstudiante" promptText="Selecciona estudiante" prefWidth="250"
+                          GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <!-- Materia -->
+                <Label text="Materia:" textFill="#dde0d2" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                    <font>
+                        <Font name="Arial" size="20"/>
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboMateria" promptText="Selecciona materia" prefWidth="250"
+                          GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <!-- Fecha -->
+                <Label text="Fecha:" textFill="#dde0d2" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                    <font>
+                        <Font name="Arial" size="20"/>
+                    </font>
+                </Label>
+                <DatePicker fx:id="datePicker" promptText="Selecciona fecha"
+                            GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </GridPane>
+
+            <!-- Botones principales -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button fx:id="guardarButton"
+                        text="Guardar Datos"
+                        onAction="#guardarButtonPressed"
+                        style="-fx-background-color: #FFF9C4; -fx-border-color: #FBC02D; -fx-border-width: 2px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-text-fill: #795548; -fx-font-size: 18px; -fx-font-weight: bold;">
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </Button>
+
+                <Button fx:id="verButton"
+                        text="Ver Datos"
+                        onAction="#verButtonPressed"
+                        style="-fx-background-color: #FFF9C4; -fx-border-color: #FBC02D; -fx-border-width: 2px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-text-fill: #795548; -fx-font-size: 18px; -fx-font-weight: bold;">
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </Button>
+
+                <Button text="Limpiar"
+                        onAction="#limpiarCampos"
+                        style="-fx-background-color: #9E9E9E; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </Button>
+            </HBox>
+
+            <!-- Tabla -->
+            <TableView fx:id="tabla" prefHeight="500">
+                <columns>
+                    <TableColumn fx:id="colIdAsistencia" prefWidth="100" text="ID Asistencia"/>
+                    <TableColumn fx:id="colIdInscripcion" prefWidth="120" text="ID Inscripción"/>
+                    <TableColumn fx:id="colEstudiante" prefWidth="200" text="Estudiante"/>
+                    <TableColumn fx:id="colMateria" prefWidth="200" text="Materia"/>
+                    <TableColumn fx:id="colFecha" prefWidth="150" text="Fecha"/>
+                    <TableColumn fx:id="colCreado" prefWidth="150" text="Creado"/>
+                    <TableColumn fx:id="colActualizado" prefWidth="150" text="Actualizado"/>
+                </columns>
+            </TableView>
+
+            <!-- Botón de regreso -->
+            <HBox alignment="CENTER">
+                <Button text="Regresar al menú"
+                        onAction="#menuButtonPressed"
+                        prefHeight="44.0" prefWidth="200.0"
+                        style="-fx-background-color: #FFF9C4; -fx-border-color: #FBC02D; -fx-border-width: 2px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #795548;">
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </Button>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>
