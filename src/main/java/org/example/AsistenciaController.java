@@ -1,97 +1,145 @@
 package org.example;
 
+import com.jcraft.jsch.JSchException;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import javax.swing.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.sql.SQLException;
 
 public class AsistenciaController {
 
     @FXML private TableView<Asistencia> tabla;
-    @FXML private TableColumn<Asistencia, Number> colIdAsistencia;
-    @FXML private TableColumn<Asistencia, Number> colIdInscripcion;
-    @FXML private TableColumn<Asistencia, String> colFecha;
-    @FXML private TableColumn<Asistencia, LocalDateTime> colCreado;
-    @FXML private TableColumn<Asistencia, LocalDateTime> colActualizado;
+    @FXML private TableColumn<Asistencia, Number>  colIdAsistencia;
+    @FXML private TableColumn<Asistencia, Number>  colIdInscripcion;
+    @FXML private TableColumn<Asistencia, String>  colFecha;
+    @FXML private TableColumn<Asistencia, String>  colCreado;      // tu FXML los define como String
+    @FXML private TableColumn<Asistencia, String>  colActualizado; // idem
     @FXML private TextField idInscripcionTextField;
     @FXML private DatePicker datePicker;
 
     private final ObservableList<Asistencia> data = FXCollections.observableArrayList();
-    private final DateTimeFormatter fechaDbFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private final DateTimeFormatter fechaVistaFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private String date = "";
 
     @FXML
     private void initialize() {
-        colIdAsistencia.setCellValueFactory(new PropertyValueFactory<>("idAsistencia"));
-        colIdInscripcion.setCellValueFactory(new PropertyValueFactory<>("idInscripcion"));
-        colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-        colCreado.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-        colActualizado.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
+        // Enlace directo a las properties de tu modelo
+        colIdAsistencia.setCellValueFactory(c -> c.getValue().idAsistenciaProperty());
+        colIdInscripcion.setCellValueFactory(c -> c.getValue().idInscripcionProperty());
+        colFecha.setCellValueFactory(c -> c.getValue().fechaProperty());
 
-        colCreado.setCellFactory(column -> crearCeldaFecha());
-        colActualizado.setCellFactory(column -> crearCeldaFecha());
+        // Como tus columnas creado/actualizado son String en el FXML, los formateo aquí:
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        colCreado.setCellValueFactory(c ->
+                new javafx.beans.property.SimpleStringProperty(
+                        c.getValue().getCreatedAt() != null ? c.getValue().getCreatedAt().format(f) : "-"
+                )
+        );
+        colActualizado.setCellValueFactory(c ->
+                new javafx.beans.property.SimpleStringProperty(
+                        c.getValue().getUpdatedAt() != null ? c.getValue().getUpdatedAt().format(f) : "-"
+                )
+        );
 
         tabla.setItems(data);
-        tabla.setPlaceholder(new Label("No hay registros"));
+
+        // Orden por ID ascendente
         colIdAsistencia.setSortType(TableColumn.SortType.ASCENDING);
         tabla.getSortOrder().add(colIdAsistencia);
-
-        recargarTabla();
     }
+
+    // ============== HANDLERS QUE PIDE TU FXML =================
 
     @FXML
     void guardarButtonPressed(ActionEvent event) {
-        String idTexto = idInscripcionTextField.getText();
-        LocalDate fechaSeleccionada = datePicker.getValue();
-
-        if (idTexto == null || idTexto.isBlank() || fechaSeleccionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Por favor, completa todos los datos.");
+        obtenerFecha();
+        if (idInscripcionTextField.getText().isEmpty() || date.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "⚠️ Por favor, complete todos los campos.");
             return;
         }
 
-        int idInscripcion;
+        int id_inscripcion;
         try {
-            idInscripcion = Integer.parseInt(idTexto.trim());
-        } catch (NumberFormatException ex) {
-            mostrarAlerta(Alert.AlertType.WARNING, "El ID de inscripción debe ser numérico.");
+            id_inscripcion = Integer.parseInt(idInscripcionTextField.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "⚠️ ID de inscripción inválido.");
             return;
         }
 
-        try {
-            conexion.ejecutarConexion();
-            try (Connection conn = conexion.obtenerConexion();
-                 PreparedStatement stmt = conn.prepareStatement(
-                         "INSERT INTO asistencias (id_inscripcion, fecha, created_at, updated_at) VALUES (?, ?, NOW(), NOW())")) {
+        // Ejecutar la operación en un hilo de fondo para no bloquear la UI
+        new Thread(() -> {
+            try {
+                conexion.ejecutarConexion();
 
-                stmt.setInt(1, idInscripcion);
-                stmt.setString(2, fechaSeleccionada.format(fechaDbFormatter));
-                stmt.executeUpdate();
+                // 🔍 Verificar si ya existe (evita lecturas compartidas; aún puede haber race, por eso usamos upsert más abajo)
+                String countSql = String.format(
+                    "SELECT COUNT(*) FROM asistencias WHERE id_inscripcion = %d AND fecha = '%s';",
+                    id_inscripcion, date
+                );
+
+                int count = conexion.ejecutarScalarInt(countSql);
+
+                if (count > 0) {
+                    Platform.runLater(() ->
+                        JOptionPane.showMessageDialog(null, "⚠️ Ya existe una asistencia para ese alumno en esa fecha.")
+                    );
+                    return; // Evita insertar duplicado
+                }
+
+                // ✅ Insertar nueva asistencia con ON DUPLICATE KEY UPDATE para evitar excepción si hay race
+                String insertSql = String.format(
+                    "INSERT INTO asistencias (id_inscripcion, fecha, created_at, updated_at) " +
+                    "VALUES (%d, '%s', NOW(), NOW()) " +
+                    "ON DUPLICATE KEY UPDATE updated_at = NOW();",
+                    id_inscripcion, date
+                );
+
+                conexion.ejecutarComandoUpdate(insertSql);
+
+                // Refrescar tabla (no desconectamos aquí)
+                try {
+                    refrescarTabla();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // Mostrar mensaje y limpiar campos en hilo de UI
+                Platform.runLater(() -> {
+                    JOptionPane.showMessageDialog(null, "✅ Asistencia guardada correctamente.");
+                    idInscripcionTextField.clear();
+                    datePicker.setValue(null);
+                });
+
+            } catch (JSchException e) {
+                Platform.runLater(() -> JOptionPane.showMessageDialog(null, "🚫 Error SSH: " + e.getMessage()));
+            } catch (SQLException e) {
+                Platform.runLater(() -> JOptionPane.showMessageDialog(null, "❌ Error SQL: " + e.getMessage()));
+                e.printStackTrace();
+            } catch (Exception e) {
+                Platform.runLater(() -> JOptionPane.showMessageDialog(null, "⚠️ Error general: " + e.getMessage()));
+                e.printStackTrace();
             }
-
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Asistencia guardada.");
-            limpiarCampos(null);
-            recargarTabla();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mostrarAlerta(Alert.AlertType.ERROR, "No se pudo guardar la asistencia: " + ex.getMessage());
-        } finally {
-            conexion.desconectar();
-        }
+            // NOTA: no desconectamos aquí para no cerrar el túnel mientras otras operaciones lo usan
+        }).start();
     }
 
     @FXML
     void verButtonPressed(ActionEvent event) {
-        recargarTabla();
+        // Cargar en segundo plano para no bloquear la UI
+        new Thread(() -> {
+            try {
+                refrescarTabla();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> JOptionPane.showMessageDialog(null, "⚠️ Error al cargar asistencias."));
+            }
+        }).start();
     }
 
     @FXML
@@ -100,56 +148,26 @@ public class AsistenciaController {
         datePicker.setValue(null);
     }
 
-    private void recargarTabla() {
-        data.clear();
-        try {
-            conexion.ejecutarConexion();
-            try (Connection conn = conexion.obtenerConexion();
-                 PreparedStatement stmt = conn.prepareStatement(
-                         "SELECT id_asistencia, id_inscripcion, fecha, created_at, updated_at FROM asistencias ORDER BY id_asistencia ASC");
-                 ResultSet rs = stmt.executeQuery()) {
+    // ==================== AUXILIARES ==========================
 
-                while (rs.next()) {
-                    int idAsistencia = rs.getInt("id_asistencia");
-                    int idInscripcion = rs.getInt("id_inscripcion");
-                    String fecha = rs.getString("fecha");
-                    Timestamp creado = rs.getTimestamp("created_at");
-                    Timestamp actualizado = rs.getTimestamp("updated_at");
+    private void refrescarTabla() throws Exception {
+        ObservableList<Asistencia> nuevas = null;
+        // abrimos la conexión SSH si hace falta, pero NO la cerramos aquí
+        conexion.ejecutarConexion();
+        String query = "SELECT id_asistencia, id_inscripcion, fecha, created_at, updated_at " +
+                "FROM asistencias ORDER BY id_asistencia ASC;";
+        nuevas = conexion.ejecutarComandoSelect(query);
 
-                    LocalDateTime creadoTime = creado != null ? creado.toLocalDateTime() : null;
-                    LocalDateTime actualizadoTime = actualizado != null ? actualizado.toLocalDateTime() : null;
-
-                    data.add(new Asistencia(idAsistencia, idInscripcion, fecha, creadoTime, actualizadoTime));
-                }
-            }
-
+        // Actualizar UI en hilo de JavaFX
+        final ObservableList<Asistencia> finalNuevas = (nuevas != null) ? nuevas : FXCollections.observableArrayList();
+        Platform.runLater(() -> {
+            data.setAll(finalNuevas);
             tabla.sort();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            mostrarAlerta(Alert.AlertType.ERROR, "No se pudieron cargar las asistencias: " + ex.getMessage());
-        } finally {
-            conexion.desconectar();
-        }
+        });
     }
 
-    private TableCell<Asistencia, LocalDateTime> crearCeldaFecha() {
-        return new TableCell<>() {
-            @Override
-            protected void updateItem(LocalDateTime value, boolean empty) {
-                super.updateItem(value, empty);
-                if (empty || value == null) {
-                    setText("");
-                } else {
-                    setText(value.format(fechaVistaFormatter));
-                }
-            }
-        };
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
+    private void obtenerFecha() {
+        LocalDate sel = datePicker.getValue();
+        date = (sel != null) ? sel.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "";
     }
 }

@@ -33,14 +33,20 @@
                        -fx-background-radius: 10; -fx-font-weight: bold;"
                 prefWidth="200" prefHeight="40"/>
 
-        <Button text="👩‍🎓 Estudiantes"
-                onAction="#abrirEstudiantes"
+        <Button text="🧑‍🏫 Personas"
+                onAction="#abrirPersonas"
                 style="-fx-background-color: white; -fx-text-fill: #845EC2; -fx-font-size: 14px;
                        -fx-background-radius: 10; -fx-font-weight: bold;"
                 prefWidth="200" prefHeight="40"/>
 
         <Button text="📘 Materias"
                 onAction="#abrirMaterias"
+                style="-fx-background-color: white; -fx-text-fill: #845EC2; -fx-font-size: 14px;
+                       -fx-background-radius: 10; -fx-font-weight: bold;"
+                prefWidth="200" prefHeight="40"/>
+
+        <Button text="📝 Inscripciones"
+                onAction="#abrirInscripciones"
                 style="-fx-background-color: white; -fx-text-fill: #845EC2; -fx-font-size: 14px;
                        -fx-background-radius: 10; -fx-font-weight: bold;"
                 prefWidth="200" prefHeight="40"/>
