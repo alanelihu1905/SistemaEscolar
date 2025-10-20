@@ -24,10 +24,10 @@
         </HBox>
 
         <HBox spacing="20" alignment="CENTER">
-            <Button text="Guardar" onAction="#guardarButtonPressed"
+            <Button fx:id="guardarButton" text="Guardar" onAction="#guardarButtonPressed"
                     style="-fx-background-color: #7B5E3B; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 8 25;" />
 
-            <Button text="Ver Asistencias" onAction="#verButtonPressed"
+            <Button fx:id="verButton" text="Ver Asistencias" onAction="#verButtonPressed"
                     style="-fx-background-color: #A07855; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 8 25;" />
 
             <Button text="Limpiar" onAction="#limpiarCampos"
