@@ -17,6 +17,13 @@ public class Main extends Application {
         System.out.println("🚀 Aplicación iniciada correctamente.");
     }
 
+    @Override
+    public void stop() throws Exception {
+        // Cerrar túnel SSH al terminar la app
+        conexion.desconectar();
+        super.stop();
+    }
+
     public static void main(String[] args) {
         launch();
     }

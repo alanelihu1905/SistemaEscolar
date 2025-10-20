@@ -33,6 +33,8 @@ public class MenuController {
     @FXML
     void cerrarAplicacion(ActionEvent event) {
         System.out.println("🚪 Cerrando aplicación...");
+        // Asegurarse de cerrar el túnel SSH antes de salir
+        conexion.desconectar();
         System.exit(0);
     }
 
