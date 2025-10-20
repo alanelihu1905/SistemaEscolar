@@ -1,51 +1,52 @@
 package org.example;
 
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AsistenciaController {
 
     @FXML private TableView<Asistencia> tabla;
-    @FXML private TableColumn<Asistencia, Number>  colIdAsistencia;
-    @FXML private TableColumn<Asistencia, Number>  colIdInscripcion;
-    @FXML private TableColumn<Asistencia, String>  colFecha;
-    @FXML private TableColumn<Asistencia, String>  colCreado;
-    @FXML private TableColumn<Asistencia, String>  colActualizado;
+    @FXML private TableColumn<Asistencia, Number> colIdAsistencia;
+    @FXML private TableColumn<Asistencia, Number> colIdInscripcion;
+    @FXML private TableColumn<Asistencia, String> colFecha;
+    @FXML private TableColumn<Asistencia, LocalDateTime> colCreado;
+    @FXML private TableColumn<Asistencia, LocalDateTime> colActualizado;
     @FXML private TextField idInscripcionTextField;
     @FXML private DatePicker datePicker;
-    @FXML private Button guardarButton;
-    @FXML private Button verButton;
 
     private final ObservableList<Asistencia> data = FXCollections.observableArrayList();
-    private final AsistenciaRepository repository = new AsistenciaRepository();
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter fechaDbFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter fechaVistaFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @FXML
     private void initialize() {
-        colIdAsistencia.setCellValueFactory(c -> c.getValue().idAsistenciaProperty());
-        colIdInscripcion.setCellValueFactory(c -> c.getValue().idInscripcionProperty());
-        colFecha.setCellValueFactory(c -> c.getValue().fechaProperty());
-        colCreado.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getCreatedAt() != null ? c.getValue().getCreatedAt().format(dateTimeFormatter) : "-"));
-        colActualizado.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getUpdatedAt() != null ? c.getValue().getUpdatedAt().format(dateTimeFormatter) : "-"));
+        colIdAsistencia.setCellValueFactory(new PropertyValueFactory<>("idAsistencia"));
+        colIdInscripcion.setCellValueFactory(new PropertyValueFactory<>("idInscripcion"));
+        colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colCreado.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+        colActualizado.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
+
+        colCreado.setCellFactory(column -> crearCeldaFecha());
+        colActualizado.setCellFactory(column -> crearCeldaFecha());
 
         tabla.setItems(data);
-        tabla.setPlaceholder(new Label("No hay asistencias registradas"));
+        tabla.setPlaceholder(new Label("No hay registros"));
         colIdAsistencia.setSortType(TableColumn.SortType.ASCENDING);
         tabla.getSortOrder().add(colIdAsistencia);
 
-        cargarAsistenciasAsync();
+        recargarTabla();
     }
 
     @FXML
@@ -54,24 +55,43 @@ public class AsistenciaController {
         LocalDate fechaSeleccionada = datePicker.getValue();
 
         if (idTexto == null || idTexto.isBlank() || fechaSeleccionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Por favor, complete todos los campos.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Por favor, completa todos los datos.");
             return;
         }
 
-        final int idInscripcion;
+        int idInscripcion;
         try {
             idInscripcion = Integer.parseInt(idTexto.trim());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             mostrarAlerta(Alert.AlertType.WARNING, "El ID de inscripción debe ser numérico.");
             return;
         }
 
-        registrarAsistenciaAsync(idInscripcion, fechaSeleccionada);
+        try {
+            conexion.ejecutarConexion();
+            try (Connection conn = conexion.obtenerConexion();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "INSERT INTO asistencias (id_inscripcion, fecha, created_at, updated_at) VALUES (?, ?, NOW(), NOW())")) {
+
+                stmt.setInt(1, idInscripcion);
+                stmt.setString(2, fechaSeleccionada.format(fechaDbFormatter));
+                stmt.executeUpdate();
+            }
+
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Asistencia guardada.");
+            limpiarCampos(null);
+            recargarTabla();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR, "No se pudo guardar la asistencia: " + ex.getMessage());
+        } finally {
+            conexion.desconectar();
+        }
     }
 
     @FXML
     void verButtonPressed(ActionEvent event) {
-        cargarAsistenciasAsync();
+        recargarTabla();
     }
 
     @FXML
@@ -80,93 +100,56 @@ public class AsistenciaController {
         datePicker.setValue(null);
     }
 
-    private void cargarAsistenciasAsync() {
-        Task<ObservableList<Asistencia>> task = new Task<>() {
-            @Override
-            protected ObservableList<Asistencia> call() throws Exception {
-                return repository.obtenerAsistencias();
-            }
-        };
+    private void recargarTabla() {
+        data.clear();
+        try {
+            conexion.ejecutarConexion();
+            try (Connection conn = conexion.obtenerConexion();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "SELECT id_asistencia, id_inscripcion, fecha, created_at, updated_at FROM asistencias ORDER BY id_asistencia ASC");
+                 ResultSet rs = stmt.executeQuery()) {
 
-        task.setOnSucceeded(e -> {
-            ObservableList<Asistencia> nuevas = task.getValue();
-            data.setAll(nuevas);
+                while (rs.next()) {
+                    int idAsistencia = rs.getInt("id_asistencia");
+                    int idInscripcion = rs.getInt("id_inscripcion");
+                    String fecha = rs.getString("fecha");
+                    Timestamp creado = rs.getTimestamp("created_at");
+                    Timestamp actualizado = rs.getTimestamp("updated_at");
+
+                    LocalDateTime creadoTime = creado != null ? creado.toLocalDateTime() : null;
+                    LocalDateTime actualizadoTime = actualizado != null ? actualizado.toLocalDateTime() : null;
+
+                    data.add(new Asistencia(idAsistencia, idInscripcion, fecha, creadoTime, actualizadoTime));
+                }
+            }
+
             tabla.sort();
-        });
-
-        task.setOnFailed(e -> {
-            Throwable ex = task.getException();
-            if (ex != null) {
-                ex.printStackTrace();
-                mostrarAlerta(Alert.AlertType.ERROR, "No fue posible cargar las asistencias: " + ex.getMessage());
-            }
-        });
-
-        ejecutarTarea(task);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR, "No se pudieron cargar las asistencias: " + ex.getMessage());
+        } finally {
+            conexion.desconectar();
+        }
     }
 
-    private void registrarAsistenciaAsync(int idInscripcion, LocalDate fecha) {
-        Task<Void> task = new Task<>() {
+    private TableCell<Asistencia, LocalDateTime> crearCeldaFecha() {
+        return new TableCell<>() {
             @Override
-            protected Void call() throws Exception {
-                repository.registrarAsistencia(idInscripcion, fecha);
-                return null;
+            protected void updateItem(LocalDateTime value, boolean empty) {
+                super.updateItem(value, empty);
+                if (empty || value == null) {
+                    setText("");
+                } else {
+                    setText(value.format(fechaVistaFormatter));
+                }
             }
         };
-
-        task.setOnSucceeded(e -> {
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Asistencia guardada correctamente.");
-            idInscripcionTextField.clear();
-            datePicker.setValue(null);
-            cargarAsistenciasAsync();
-        });
-
-        task.setOnFailed(e -> {
-            Throwable ex = task.getException();
-            if (ex instanceof AsistenciaDuplicadaException) {
-                mostrarAlerta(Alert.AlertType.WARNING, ex.getMessage());
-            } else if (ex != null) {
-                ex.printStackTrace();
-                mostrarAlerta(Alert.AlertType.ERROR, "No se pudo registrar la asistencia: " + ex.getMessage());
-            }
-        });
-
-        ejecutarTarea(task);
-    }
-
-    private void ejecutarTarea(Task<?> task) {
-        task.setOnRunning(e -> bloquearControles(true));
-        task.stateProperty().addListener((obs, oldState, newState) -> {
-            if (newState == Worker.State.SUCCEEDED || newState == Worker.State.FAILED || newState == Worker.State.CANCELLED) {
-                bloquearControles(false);
-            }
-        });
-
-        Thread thread = new Thread(task, "db-task-" + System.nanoTime());
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    private void bloquearControles(boolean bloquear) {
-        Platform.runLater(() -> {
-            if (guardarButton != null) {
-                guardarButton.setDisable(bloquear);
-            }
-            if (verButton != null) {
-                verButton.setDisable(bloquear);
-            }
-            if (tabla != null) {
-                tabla.setDisable(bloquear);
-            }
-        });
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String mensaje) {
-        Platform.runLater(() -> {
-            Alert alerta = new Alert(tipo);
-            alerta.setHeaderText(null);
-            alerta.setContentText(mensaje);
-            alerta.showAndWait();
-        });
+        Alert alerta = new Alert(tipo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 }
