@@ -3,11 +3,7 @@ package org.example;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import java.sql.*;
-import java.time.LocalDateTime;
 
 public class conexion {
     private static final String hostname = "fi.jcaguilar.dev";
@@ -49,49 +45,4 @@ public class conexion {
         return DriverManager.getConnection(conString, dbUser, dbPass);
     }
 
-    // UPDATE/INSERT/DELETE: ahora acepta la consulta como parámetro para evitar la variable estática
-    public static void ejecutarComandoUpdate(String query) throws SQLException {
-        try (Connection con = obtenerConexion();
-             Statement st = con.createStatement()) {
-            st.executeUpdate(query);
-        }
-    }
-
-    // SELECT → ObservableList<Asistencia>: acepta la consulta como parámetro
-    public static ObservableList<Asistencia> ejecutarComandoSelect(String query) {
-        ObservableList<Asistencia> list = FXCollections.observableArrayList();
-        try (Connection con = obtenerConexion();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
-
-            while (rs.next()) {
-                int id_asistencia = rs.getInt("id_asistencia");
-                int id_inscripcion = rs.getInt("id_inscripcion");
-                String fecha = rs.getString("fecha");
-
-                Timestamp created_at = rs.getTimestamp("created_at");
-                Timestamp updated_at = rs.getTimestamp("updated_at");
-                LocalDateTime cAt = created_at != null ? created_at.toLocalDateTime() : null;
-                LocalDateTime uAt = updated_at != null ? updated_at.toLocalDateTime() : null;
-
-                list.add(new Asistencia(id_asistencia, id_inscripcion, fecha, cAt, uAt));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Nuevo: ejecutar una consulta que devuelve un entero (por ejemplo COUNT(*))
-    public static int ejecutarScalarInt(String query) throws SQLException {
-        try (Connection con = obtenerConexion();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
-            if (rs.next()) {
-                return rs.getInt(1);
-            } else {
-                return 0;
-            }
-        }
-    }
 }
